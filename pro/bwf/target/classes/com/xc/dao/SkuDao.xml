@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.SkuDao">
+    <select id="findSkuListBySpuId" resultType="sku">
+        select  * from sku where sku_spu_id=#{spu_id}
+    </select>
+
+    <select id="findSkuSpuAttr" resultType="SkuSpuAttr">
+
+
+        SELECT a.`id` value_id,a.*,b.* FROM spu_attr_value  a
+        INNER JOIN spu_attr_key b ON a.`value_attr_key_id` =b.`key_id`
+        WHERE a.`id`
+        <foreach collection="ids" item="vid" open="IN(" close=")" separator=",">
+            #{vid}
+        </foreach>
+        ORDER BY key_id
+    </select>
+
+    <select id="findSkuBySpuIdAndSkuName" resultType="Sku">
+        select * from sku where sku_spu_id=#{spu_id} and sku_name=#{sku_name}
+    </select>
+
+    <insert id="insertSku" >
+        insert into sku(sku_spu_id,sku_name,sku_spuattr,sku_price,sku_quantity,createtime,updatetime)
+        values(#{sku_spu_id},#{sku_name},#{sku_spuattr},#{sku_price},#{sku_quantity},now(),now())
+    </insert>
+
+</mapper>

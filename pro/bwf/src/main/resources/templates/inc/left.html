@@ -1,0 +1,30 @@
+<div th:fragment="left">
+    <div id="sidebar">
+        <div id="sidebar-wrapper">
+            <!-- Sidebar with logo and menu -->
+            <h1 id="sidebar-title"><a href="#" th:text="${session.admin_name}"></a></h1>
+            <!-- Logo (221px wide) -->
+            <div class="xxx"><h4><a href="#">学掌门后台商城管理系统</a></h4></div>
+            <!-- Sidebar Profile links -->
+            <div id="profile-links"> Hello, <a href="#" title="Edit your profile" th:text="${session.admin_name}"></a> | <a th:href="@{/admin/logout}" title="Sign Out">Sign Out</a> </div>
+            <ul id="main-nav">
+                <!-- Accordion Menu -->
+                <li> <a href="#/" class="nav-top-item no-submenu">
+                    <!-- Add the class "no-submenu" to menu items with no sub menu -->
+                    首页 </a> </li>
+                <li th:each="fm:${session.menuList}">
+                    <a href="#" class="nav-top-item" th:if="${fm.pid==null}" th:text="${fm.menu_name}">
+                        <!-- Add the class "current" to current menu item -->
+                        Articles </a>
+                    <ul>
+                        <li th:each="zm:${session.menuList}">
+                            <a th:href="@{${zm.menu_url}}" th:if="${zm.pid!=null && zm.pid==fm.menu_id}" th:text="${zm.menu_name}"></a>
+                        </li>
+
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</div>

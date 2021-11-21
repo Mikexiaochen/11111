@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>参数管理</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加属性-->
+        <input type="submit" class="button" value="添加筛选属性" onclick="tiaozhuan()">
+        <hr>
+        <table>
+            <thead>
+            <tr>
+
+                <th>key_id</th>
+                <th>key_name</th>
+                <th>高级属性</th>
+                <th>创建时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="alt-row" th:each="ad:${spuAttrKeyList}">
+                <td th:text="${ad.key_id}"></td>
+                <td th:text="${ad.key_name}"></td>
+                <td>
+                    <span th:if="${ad.key_ishigh==0}">否</span>
+                    <span th:if="${ad.key_ishigh==1}">是</span>
+                </td>
+                <td th:text="${ad.createtime}"></td>
+                <td>
+                    <!-- Icons -->
+                    <a th:href="@{/attr/update/(key_id=${ad.key_id})}" title="Edit"><img th:src="@{/resource/images/icons/pencil.png}" alt="Edit"></a>
+                    <a th:href="@{/attr/delete/(key_id=${ad.key_id})}" onclick="return confirm('确认删除此用户吗？')" title="Delete"><img th:src="@{/resource/images/icons/cross.png}" alt="Delete"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+        function tiaozhuan() {
+            window.location.href="/attr/add";
+        }
+    </script>
+</body>
+</html>

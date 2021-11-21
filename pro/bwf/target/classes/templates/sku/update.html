@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!--外部文件的引入-->
+    <div th:replace="../templates/inc/header :: header"></div>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- 左边菜单 -->
+    <div th:replace="../templates/inc/left :: left"></div>
+
+    <!--每个页面的核心内容-->
+    <div id="main-content">
+        <h2>更新spu的sku</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!---------------------在此写内容----------------------------------------------------->
+        <h5></h5>
+        <form th:action="@{/spu/save}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>商品名</label>
+                    <input class="text-input small-input" type="text" name="spu_name" th:value="${spu.spu_name}">
+                </p>
+                <input type="hidden" class="spuid" th:value="${spu.spu_id}">
+                <input type="hidden" class="changdu" th:value="${spu.spuAttrKeyList.size()}">
+                <div th:each="akey,vs:${spu.spuAttrKeyList}">
+                <p>
+                    <label th:text="${akey.key_name}">属性键选择</label>
+                    <input type="hidden" th:value="${akey.key_id}">
+
+                    <div class="valuelist">
+                    <label th:each="avalue:${akey.spuAttrValueList}">
+                        <input type="radio" th:value="${avalue.id}" class="vz" th:name="${'value_id'+vs.index}">
+                        <span th:text="${avalue.value_name}"></span>
+                    </label>
+                    </div>
+
+                </p>
+                </div>
+                <p>
+
+                    <input type="button" onclick="queding()" value="确定规格" >
+                    <label>名称</label>
+                    <input name="skuname" class="skuname" readonly>
+                    <label>价格</label>
+                    <input name="skuprice" class="skuprice" >
+                    <label>库存</label>
+                    <input name="kucun" class="kucun" >
+
+                </p>
+                <p>
+
+
+                    <input class="button" type="button" onclick="addSku()" value="添加sku规格" >
+                </p>
+                <p>
+                    <input class="button" type="submit" value="修改商品" >
+                </p>
+            </fieldset>
+            <div class="clear"></div>
+            <!-- End .clear -->
+        </form>
+
+        <script>
+            
+            function addSku() {
+                //属性键的个数
+                var le=$(".changdu").val();
+                //商品spuid
+                var spu_id=$(".spuid").val();
+                var str="";
+                for(var i=0;i<le;i++){
+                    var v=$(":radio[name='value_id"+i+"']:checked").val();
+                    str+=","+v;
+                }
+                //当前选择的属性值
+                str=str.substr(1);
+
+                //获取价格
+                var skuprice=$(".skuprice").val();
+                var kucun=$(".kucun").val();
+                //获取库存
+
+                fetch("/sku/saveSku?vids="+str+"&spu_id="+spu_id+"&skuprice="+skuprice+"&kucun="+kucun).then(function(res){
+                    return res.text();
+                }).then(function(data){
+                    if(data=="1"){
+                        alert("ok")
+                    }
+                    if(data=="0"){
+                        alert("已经存在这个sku");
+                    }
+                })
+
+            }
+            function queding() {
+                var le=$(".changdu").val();
+                var spu_id=$(".spuid").val();
+                var str="";
+                for(var i=0;i<le;i++){
+                    var v=$(":radio[name='value_id"+i+"']:checked").val();
+                    str+=","+v;
+                }
+                //当前选择的属性值
+                str=str.substr(1);
+                //获取当前这个属性值对应的sku信息，如果没有sku信息的话，如果有sku信息
+                fetch("/sku/getsku?vids="+str+"&spu_id="+spu_id).then(function(res){
+                    return res.text()
+                }).then(function(data){
+                    console.log(data.length)
+                    if(data.length>0){
+                        var obj=JSON.parse(data)
+                        console.log(obj)
+                        $(".skuname").val(obj.sku_name);
+                        $(".skuprice").val(obj.sku_price);
+                        $(".kucun").val(obj.sku_quantity);
+                    }else {
+                        $(".skuname").val("");
+                        $(".skuprice").val("");
+                        $(".kucun").val("");
+                    }
+
+
+
+
+                })
+
+            }
+        </script>
+        <!-------------------------------------------------------------------------->
+        <!--页脚-->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <!-- End #main-content -->
+</div>
+</body>
+</html>

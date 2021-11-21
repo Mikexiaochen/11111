@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>角色管理</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加员工-->
+        <input type="submit" class="button" value="添加角色" onclick="tiaozhuan()">
+
+        <hr>
+        <table>
+            <thead>
+            <tr>
+
+                <th>角色id</th>
+                <th>角色名称</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="alt-row" th:each="ro:${roleList}">
+                <td th:text="${ro.role_id}"></td>
+                <td th:text="${ro.role_name}"></td>
+                <td>
+                    <!-- Icons -->
+                    <a th:href="@{/role/update/(role_id=${ro.role_id})}" title="Edit"><img th:src="@{/resource/images/icons/pencil.png}" alt="Edit"></a>
+                    <a th:href="@{/role/delete/(role_id=${ro.role_id})}" onclick="return confirm('确认删除此角色吗？')" title="Delete"><img th:src="@{/resource/images/icons/cross.png}" alt="Delete"></a>
+            </tr>
+            </tbody>
+        </table>
+
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+        function tiaozhuan() {
+            window.location.href="/role/add";
+        }
+    </script>
+</body>
+</html>

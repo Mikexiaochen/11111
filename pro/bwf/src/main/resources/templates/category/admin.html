@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+    <style>
+        .zi .success{
+            margin-left: 20px;
+        }
+
+        .sun .attention{
+            margin-left: 40px;
+        }
+
+        .notification{
+            width: auto;
+        }
+        .ziw{
+            display: none;
+        }
+        .sunw{
+            display: none;
+        }
+        .fu,.zi,.sun{
+            cursor: pointer;
+        }
+        .tj{
+            position: absolute;
+            top: 5px;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>分类管理</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <a th:href="@{/category/add}" >添加一级分类</a>
+        <div th:each="fu:${categoryList}" th:if="${fu.cate_parentid==null}" class="fu">
+            <div class="notification error png_bg">
+                <div th:text="${fu.cate_name}"></div>
+                <a th:href="@{/category/add(cate_id=${fu.cate_id})}" class="tj">添加二级分类</a>
+            </div>
+            <div class="ziw">
+                <div th:each="zi:${categoryList}" th:if="${zi.cate_parentid!=null &&zi.cate_parentid==fu.cate_id}" class="zi">
+                    <div class="notification success png_bg">
+                        <div th:text="${zi.cate_name}"></div>
+                        <a th:href="@{/category/add(cate_id=${zi.cate_id})}" class="tj">添加三级分类</a>
+                    </div>
+                    <div class="sunw">
+                        <div th:each="sun:${categoryList}" th:if="${sun.cate_parentid!=null &&sun.cate_parentid==zi.cate_id}" class="sun">
+                            <div class="notification attention png_bg">
+                                <div th:text="${sun.cate_name}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+      $(function () {
+          $(".fu .error").click(function () {
+            $(this).next().toggle();
+          })
+          $(".zi .success").click(function () {
+              $(this).next().toggle();
+          })
+      })
+    </script>
+</body>
+</html>

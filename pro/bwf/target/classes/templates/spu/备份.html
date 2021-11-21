@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!--外部文件的引入-->
+    <div th:replace="../templates/inc/header :: header"></div>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- 左边菜单 -->
+    <div th:replace="../templates/inc/left :: left"></div>
+
+    <!--每个页面的核心内容-->
+    <div id="main-content">
+        <h2>更新spu及sku</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!---------------------在此写内容----------------------------------------------------->
+        <h5></h5>
+        <form th:action="@{/spu/save}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>商品品牌</label>
+                    <select name="spu_brand_id">
+                        <option th:each="b:${brands}" th:value="${b.brand_id}" th:checked="${b.brand_id==spu.spu_brand_id}" th:text="${b.brand_name}">
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <label>商品名</label>
+                    <input class="text-input small-input" type="text" name="spu_name" th:value="${spu.spu_name}">
+                </p>
+                <p>
+                    <label>商品标题</label>
+                    <input class="text-input small-input" type="text" name="spu_title" th:value="${spu.spu_title}">
+                </p>
+                <p>
+                    <label>是否上上架</label>
+                    <label><input th:checked="${spu.spu_status==1}" class="text-input" type="radio" name="spu_status" value="1">上架</label>
+                    <label><input th:checked="${spu.spu_status==0}" class="text-input" type="radio" name="spu_status" value="0">下架</label>
+                </p>
+                <p>
+                    <label>商品单位</label>
+                    <input class="text-input small-input" type="text" name="spu_unit" th:value="${spu.spu_unit}">
+                </p>
+                <p>
+                    暂时不管分类了。。。
+                </p>
+                <div th:each="akey,vs:${spu.spuAttrKeyList}">
+                <p>
+                    <label th:text="${akey.key_name}">属性键选择</label>
+                    <input type="hidden" value="${akey.key_id}">
+
+                    <div class="valuelist">
+                    <label th:each="avalue:${akey.spuAttrValueList}">
+                        <input type="radio" th:value="${avalue.id}" th:class="${'v'+vs.index}" th:name="${'value_id'+vs.index}">
+                        <span th:text="${avalue.value_name}"></span>
+                    </label>
+                    </div>
+
+                </p>
+                </div>
+                <p>
+                    <input type="button" value="确定规格" >
+                    <label>价格</label>
+                    <input name="price" class="price" >
+                    <label>库存</label>
+                    <input name="price" class="price" >
+                </p>
+                <p>
+
+
+                    <input class="button" type="button" value="添加sku规格" >
+                </p>
+                <p>
+                    <input class="button" type="submit" value="修改商品" >
+                </p>
+            </fieldset>
+            <div class="clear"></div>
+            <!-- End .clear -->
+        </form>
+
+        <script>
+            function tianjiazhi() {
+                $(".shuxingzhiw").append('<input type="text" name="list[0].valuen" placeholder="重新添加属性值"><input type="button" class="cha" value="×">');
+            }
+
+            $(function(){
+                $(".shuxingzhiw").on("click", ".cha", function(){
+                    //此处的$(this)指$( ".cha")，而非$(attrkey)
+                    $(this).prev().remove();
+                    $(this).remove();
+                });
+            })
+            
+            function selecterji(_this) {
+                //当前分类的id，下一级菜单的父id
+               let pid=_this.value;
+               fetch("/spu/getcate?pid="+pid).then(function(res){
+                   return res.text();
+               }).then(function(data){
+                 let objarr=JSON.parse(data);
+                 let erjiele=$(".erji");
+                 erjiele.html("");
+                 $(".sanji").html(' <option>-请选择三级分类-</option>');
+                 for(let obj of objarr){
+                     let opt=$("<option></option>");
+                     opt.attr("value",obj.cate_id);
+                     opt.text(obj.cate_name);
+                     erjiele.append(opt);
+                 }
+               })
+            }
+            function selectsanji(_this) {
+                //当前分类的id，下一级菜单的父id
+                let pid=_this.value;
+                fetch("/spu/getcate?pid="+pid).then(function(res){
+                    return res.text();
+                }).then(function(data){
+                    let objarr=JSON.parse(data);
+                    let erjiele=$(".sanji");
+                    erjiele.html("");
+                    for(let obj of objarr){
+                        let opt=$("<option></option>");
+                        opt.attr("value",obj.cate_id);
+                        opt.text(obj.cate_name);
+                        erjiele.append(opt);
+                    }
+                })
+            }
+            var moren;
+            function getattrkey(_this) {
+                // 获取当前分类的id
+                let cate_id=_this.value;
+               //获取当前这个分类的所有商品属性键
+                fetch("/spu/getattrKey?cate_id="+cate_id).then(function(res){
+                    return res.text();
+                }).then(function(data){
+
+                    let objarr=JSON.parse(data);
+                    moren=objarr[0];
+                    let shuxingjian=$(".shuxingjian");
+
+                    for(let x of objarr){
+                        let opt=$('<option></option>')
+                        opt.attr("value",x.key_id);
+                        opt.text(x.key_name);
+                        shuxingjian.append(opt)
+                    }
+                })
+
+           }
+
+           function xuanzezhi(_this) {
+                //这是属性键的值
+                let key_id=_this.value;
+                //根据属性键的值获取属性值的列表
+               fetch("/spu/getvalueList?key_id="+key_id).then(function (res) {
+                    return res.text();
+               }).then(function(data){
+                   let objarr=JSON.parse(data);
+                   var vlist=$(".valuelist");
+                   for(let o of objarr){
+                       var obj=$("<input type='checkbox' name='value_id'>");
+                       obj.attr("value",o.id)
+                       var obj2=$("<span></span>")
+                        obj2.text(o.value_name)
+                       vlist.append(obj);
+                       vlist.append(obj2);
+                   }
+               })
+           }
+        </script>
+        <!-------------------------------------------------------------------------->
+        <!--页脚-->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <!-- End #main-content -->
+</div>
+</body>
+</html>

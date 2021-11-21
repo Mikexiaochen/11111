@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.CategoryDao">
+    <select id="findAllCategory" resultType="category">
+        select * from category
+    </select>
+    <!--插入分类-->
+    <insert id="insertCategory" parameterType="Category">
+        <selectKey keyProperty="cate_id" order="AFTER" resultType="int">
+            SELECT  LAST_INSERT_ID()
+        </selectKey>
+        insert into category(cate_name,cate_sort,createtime,updatetime,cate_channel,cate_parentid)
+        values(
+            #{cate_name},#{cate_sort},#{createtime},#{updatetime},#{cate_channel},#{cate_parentid}
+        )
+    </insert>
+    <!--创建分类和品牌的关系-->
+    <insert id="saveCateBrand">
+        insert into brand_categories(brand_id,category_id)values(#{brand_id},#{category_id})
+    </insert>
+    <!--根据父类id获取子类分类-->
+    <select id="findCateById" resultType="category">
+        select * from category where cate_parentid=#{cate_parentid}
+    </select>
+</mapper>

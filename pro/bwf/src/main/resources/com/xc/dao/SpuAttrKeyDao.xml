@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.SpuAttrKeyDao">
+    <!--插入属性键操作-->
+    <insert id="insertSpuAttr">
+        insert into spu_attr_key(key_id,key_name,createtime,updatetime)
+        values(
+            #{key_id},#{key_name},now(),now()
+        )
+    </insert>
+    <!--插入属性和分类的关系-->
+    <insert id="insertSpuAttrCate">
+        insert into spu_attr_key_categories(spu_attr_key_id,category_id)values(#{key_id},#{cate_id})
+    </insert>
+    <!--获取筛选属性-->
+    <select id="findShaiXuanAttr" resultType="SpuAttrKey">
+        select  * from spu_attr_key where key_issku=#{key_issku}
+    </select>
+    <!--获取属性键对象-->
+    <select id="findSpuAttrkeyById" resultMap="findSpuAttrkeyByIdMap">
+        select * from  spu_attr_key where key_id=#{key_id}
+    </select>
+    <resultMap id="findSpuAttrkeyByIdMap" type="SpuAttrKey">
+        <!--当前关于admin的配置-->
+        <id column="key_id" property="key_id"></id>
+        <result column="key_name" property="key_name"></result>
+        <result column="key_issku" property="key_issku"></result>
+        <result column="key_ishigh" property="key_ishigh"></result>
+        <result column="createtime" property="createtime"></result>
+        <result column="updatetime" property="updatetime"></result>
+
+        <!--lazy懒加载 如果你只需要admin 不需要rolelist，只执行getAdminByName这个sql语句，如果需要使用rolelist时候，他才会再来执行getRoleListByAdminId对应的sql语句-->
+        <collection property="spuAttrValueList" ofType="SpuAttrValue" column="key_id" select="com.xc.dao.SpuAttrValueDao.getSpuAttrValueListByKeyId" fetchType="lazy"></collection>
+    </resultMap>
+    <update id="saveSpukey" parameterType="SpuAttrKey">
+        update  spu_attr_key set key_name =#{key_name},key_ishigh=#{key_ishigh} ,updatetime=now()
+        where key_id=#{key_id}
+    </update>
+    <select id="findSpuAttrKeyByCateId" resultType="SpuAttrKey">
+        SELECT a.* FROM `spu_attr_key` a INNER JOIN `spu_attr_key_categories` b ON a.key_id=b.`spu_attr_key_id`
+        WHERE key_issku=1 AND b.category_id=#{category_id}
+    </select>
+
+    <select id="findSpuAttrKeyBySpuId" resultMap="findSpuAttrkeyByIdMap">
+        SELECT a.* FROM spu_attr_key a INNER JOIN spu_attr_key_categories b
+ON a.`key_id`=b.`spu_attr_key_id` WHERE key_issku=1 AND b.`category_id`=(SELECT bb.cate_id FROM spu xx INNER JOIN cate_spu bb ON xx.`spu_id`=bb.spu_id WHERE xx.spu_id=#{spu_id})
+    </select>
+</mapper>

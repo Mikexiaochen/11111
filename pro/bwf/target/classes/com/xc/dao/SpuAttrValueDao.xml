@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.SpuAttrValueDao">
+    <select id="getSpuAttrValueListByKeyId" resultType="SpuAttrValue">
+        select * from spu_attr_value where value_attr_key_id=#{key_id}
+    </select>
+    <delete id="deleteSpuKeyValue">
+        delete  from spu_attr_value where value_attr_key_id =#{value_attr_key_id}
+    </delete>
+    <insert id="insertSpuValue">
+        insert into spu_attr_value (value_name,createtime,updatetime,value_attr_key_id)values
+        /*实体中包含集合使用foreach遍历集合，item为循环元素，separator分隔符”，“*/
+        <foreach collection="value_names" item="v" separator=",">
+            (#{v},now(),now(),#{value_attr_key_id})
+        </foreach>
+    </insert>
+    <select id="findValueById" resultType="SpuAttrValue">
+        select * from  spu_attr_value where value_attr_key_id=#{value_attr_key_id}
+    </select>
+    <select id="findspuAttrValueSpusListBySpuId" resultType="SpuAttrValueSpus">
+        SELECT a.*,b.value_name FROM spu_attr_value_spus a INNER JOIN spu_attr_value b
+ ON a.`spu_attr_value_id`=b.id where spu_id=#{spu_id};
+    </select>
+</mapper>

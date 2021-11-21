@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>添加角色</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <h5>添加的用户默认密码为：123456</h5>
+        <!--添加角色-->
+        <form th:action="@{/role/save}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>角色名</label>
+                    <input class="text-input small-input" type="text"  name="role_name">
+                </p>
+                <p>
+                    <label>请选择当前用户的权限:</label>
+                    <div>
+                        <div th:each="fu:${permissionList}">
+                            <div th:if="${fu.pid==null}">
+                                <label>
+                                    <input type="checkbox" th:value="${fu.permission_id}" name="permission_id">
+                                    <span th:text="${fu.permission_name}" style="font-size: 18px"></span><b>&nbsp&nbsp:</b>
+                                </label>
+                                <div th:each="zi:${permissionList}" >
+                                    <div class="erji" th:if="${zi.pid==fu.permission_id && fu.pid==null}" >
+                                        <label>
+                                            <input type="checkbox" th:value="${zi.permission_id}" name="permission_id">
+                                            <span th:text="${zi.permission_name}" style="font-size: 16px"></span><b><i>&nbsp&nbsp:</b>
+                                        </label>
+                                        <span th:each="sun:${permissionList}">
+                                            <label th:if="${sun.pid==zi.permission_id && zi.pid!=null}">
+                                                <input type="checkbox" th:value="${sun.permission_id}" name="permission_id">
+                                                <span th:text="${sun.permission_name}"></span>
+                                            </label>
+                                        </span>
+                                    </div>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div>
+                    </div>
+
+                </p>
+
+                <p>
+                    <input class="button" type="submit" value="添加角色">
+                </p>
+            </fieldset>
+        </form>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.SpuDao">
+    <!--返回值属性比数据库属性多，需要添加重写resultmap 连立collection-->
+    <select id="getSpuList" resultMap="SpuMap">
+        select * from spu
+    </select>
+    <resultMap id="SpuMap" type="Spu">
+        <!--主键，属性-->
+        <id column="spu_id" property="spu_id"></id>
+        <result column="spu_name" property="spu_name"></result>
+        <result column="spu_title" property="spu_title"></result>
+        <result column="spu_introduction" property="spu_introduction"></result>
+        <result column="spu_unit" property="spu_unit"></result>
+        <result column="spu_status" property="spu_status"></result>
+        <result column="createtime" property="createtime"></result>
+        <result column="updatetime" property="updatetime"></result>
+        <result column="spu_brand_id" property="spu_brand_id"></result>
+
+
+        <collection property="brand" ofType="brand" column="spu_brand_id" select="com.xc.dao.BrandDao.findBrandById" fetchType="lazy"></collection>
+    </resultMap>
+    <insert id="insertSpu" parameterType="spu">
+        <selectKey keyProperty="spu_id" order="AFTER" resultType="long">
+            SELECT LAST_INSERT_ID();
+        </selectKey>
+        insert into spu(spu_name,spu_title,spu_unit,spu_status,createtime,updatetime,spu_brand_id)
+        values(#{spu_name},#{spu_title},#{spu_unit},#{spu_status},now(),now(),#{spu_brand_id})
+    </insert>
+    <insert id="insertCateId">
+       insert  into cate_spu (spu_id,cate_id) values(#{spu_id},#{cate_id})
+    </insert>
+    <insert id="insertValueImage">
+        insert into spu_attr_value_spus(spu_attr_value_id,spu_id)values
+        <foreach collection="value_ids" item="v" separator="," >
+            (#{v},#{spu_id})
+        </foreach>
+    </insert>
+    <select id="findSpuById" resultMap="spuMap2">
+        select  * from spu where spu_id=#{spu_id}
+    </select>
+    <resultMap id="spuMap2" type="Spu">
+        <id column="spu_id" property="spu_id"></id>
+        <result column="spu_name" property="spu_name"></result>
+        <result column="spu_title" property="spu_title"></result>
+        <result column="spu_introduction" property="spu_introduction"></result>
+        <result column="spu_unit" property="spu_unit"></result>
+        <result column="spu_status" property="spu_status"></result>
+        <result column="createtime" property="createtime"></result>
+        <result column="updatetime" property="updatetime"></result>
+        <result column="spu_brand_id" property="spu_brand_id"></result>
+
+        <collection property="brand" javaType="brand"  column="spu_brand_id" select="com.xc.dao.BrandDao.findBrandById" fetchType="lazy"></collection>
+        <collection property="skuList" ofType="sku" column="spu_id" select="com.xc.dao.SkuDao.findSkuListBySpuId" fetchType="lazy"></collection>
+        <collection property="spuAttrKeyList" ofType="SpuAttrKey" column="spu_id" select="com.xc.dao.SpuAttrKeyDao.findSpuAttrKeyBySpuId" fetchType="lazy"></collection>
+        <collection property="spuAttrValueSpusList" ofType="SpuAttrValueSpus" column="spu_id" select="com.xc.dao.SpuAttrValueDao.findspuAttrValueSpusListBySpuId" fetchType="lazy"></collection>
+
+    </resultMap>
+</mapper>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+    <style>
+        .xuanze label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>修改员工</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <h5>添加的用户默认密码为：123456</h5>
+        <!--添加员工-->
+        <form th:action="@{/admin/alter}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>用户名</label>
+                    <!--绑定admin-->
+                    <input type="hidden" th:value="${admin.admin_id}" name="admin_id">
+                    <input class="text-input small-input" type="text"  name="admin_name" th:value="${admin.admin_name}">
+                </p>
+                <p>
+                    <label>用户昵称</label>
+                    <input class="text-input small-input" type="text" name="admin_nickname" th:value="${admin.admin_nickname}">
+                </p>
+                <p>
+                    <label>请选择添加用户的角色:</label>
+                <div class="xuanze">
+                    <label th:each="ro:${admin.roleList}">
+                        <!--？？？？？-->
+                        <input type="checkbox" th:checked="${ro.xzrole_id==null?checked:''}" th:value="${ro.role_id}" name="role_id">
+                        <span th:text="${ro.role_name}"></span>
+                    </label>
+                </div>
+
+                </p>
+
+                <p>
+                    <input class="button" type="submit" value="修改员工">
+                </p>
+            </fieldset>
+        </form>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>商品列表</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加员工-->
+        <input type="submit" class="button" value="添加商品" onclick="tiaozhuan()">
+
+        <hr>
+        <table>
+            <thead>
+            <tr>
+                <th>商品id</th>
+                <th>商品名</th>
+                <th>商品标题</th>
+                <th>商品状态</th>
+                <th>商品品牌</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="alt-row" th:each="sp:${spuList}">
+                <td th:text="${sp.spu_id}"></td>
+                <td th:text="${sp.spu_name}"></td>
+                <td th:text="${sp.spu_title}"></td>
+                <td>
+                    <button th:if="${sp.spu_status}==0" type="button"><font color="red">上架</font></button>
+                    <button th:if="${sp.spu_status}==1" type="button"><font color="green">下架</font></button>
+                </td>
+                <td>
+                   <img th:src="${'http://localhost:8080/img/'+sp.brand.brand_logourl}" width="60px" height="30px">
+                </td>
+                <td>
+                    <!-- Icons -->
+                    <a th:href="@{/spu/update/(spu_id=${sp.spu_id})}" title="Edit"><img th:src="@{/resource/images/icons/pencil.png}" alt="Edit"></a>
+                    <a th:href="@{/spu/delete/(spu_id=${sp.spu_id})}" onclick="return confirm('确认删除此角色吗？')" title="Delete"><img th:src="@{/resource/images/icons/cross.png}" alt="Delete"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+        function tiaozhuan() {
+            window.location.href="/spu/add";
+        }
+    </script>
+</body>
+</html>

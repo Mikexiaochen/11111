@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Reset Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/reset.css}" type="text/css" media="screen" />
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/style.css}" type="text/css" media="screen" />
+    <!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
+    <link rel="stylesheet" th:href="@{/resource/css/invalid.css}" type="text/css" media="screen" />
+    <link rel="stylesheet" th:href="@{/resource/css/mydefine.css}" type="text/css" media="screen" />
+    <!--                       Javascripts                       -->
+    <!-- jQuery -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery-3.4.1.js}"></script>
+    <!-- jQuery Configuration -->
+    <script type="text/javascript" th:src="@{/resource/scripts/simpla.jquery.configuration.js}"></script>
+    <!-- Facebox jQuery Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/facebox.js}"></script>
+    <!-- jQuery WYSIWYG Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.wysiwyg.js}"></script>
+    <!-- jQuery Datepicker Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.datePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.date.js}"></script>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>添加商品</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加角色-->
+        <form th:action="@{/spu/save}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>商品品牌</label>
+                    <select name="spu_brand_id">
+                        <option th:each="b:${brands}" th:value="${b.brand_id}" th:text="${b.brand_name}"></option>
+                    </select>
+                </p>
+                <p>
+                    <label>商品名</label>
+                    <input class="text-input small-input" type="text"  name="spu_name">
+                </p>
+                <p>
+                    <label>商品标题</label>
+                    <input class="text-input small-input" type="text"  name="spu_title">
+                </p>
+                <p>
+                    <label>是否上架</label>
+                    <label><input  checked  type="radio" class="text-input" value="0"  name="spu_status">上架</label>
+                    <label><input value="1" type="radio" class="text-input" name="spu_status">下架</label>
+                </p>
+                <p>
+                    <label>商品单位</label>
+                    <input class="text-input small-input" type="text"  name="spu_unit">
+                </p>
+                <p>
+                    <label>选择分类</label>
+                    <select class="yiji"  onchange="selecterji(this)">
+                        <option th:each="br:${categoryList}" th:if="${br.cate_parentid==null}" th:value="${br.cate_id}">
+                            <span th:text="${br.cate_name}"></span>
+                        </option>
+                    </select>
+                    <select class="erji" onchange="selectsanji(this)">
+                        <option>-请选择二级分类-</option>
+                    </select>
+                    <select class="sanji" name="cate_id" onchange="getattrkey(this)">
+                        <option>-请选择三级分类-</option>
+                    </select>
+                </p>
+                <p>
+                    <label>选择属性键</label>
+                    <select class="attrKey" name="key_id" onchange="xuanzezhi(this)">
+                        <option>-请选择属性键-</option>
+                    </select>
+
+                </p>
+                <p>
+                    <label>-请选择属性值-</label>
+                    <div class="attrValue" >
+                    </div>
+                </p>
+                <p>
+                    <label>输入属性键</label>
+
+                    <input type="text" name="list[0].keyn" placeholder="重新添加属性键">
+                </p>
+                <p>
+                    <label>输入属性值</label>
+                    <input type="button" value="添加属性值选项" onclick="tianjiazhi()"><br/>
+                <div class="shuxingzhiw">
+                    <input type="text" name="list[0].valuen" placeholder="重新添加属性值"><input type="button" class="cha" value="×">
+                </div>
+                </p>
+                <p>
+                    <input class="button" type="submit" value="添加商品">
+                </p>
+            </fieldset>
+        </form>
+        <script>
+            function tianjiazhi() {
+                $(".shuxingzhiw").append('<input type="text" name="list[0].valuen" placeholder="重新添加属性值"><input type="button" class="cha" value="×">');
+            }
+
+            $(function(){
+                $(".shuxingzhiw").on("click", ".cha", function(){
+                    //此处的$(this)指$( ".cha")，而非$(attrkey)
+                    $(this).prev().remove();
+                    $(this).remove();
+                });
+            })
+            function selecterji(_this) {
+                //当前分类的id，下一级菜单的父id
+                let pid=_this.value;
+                fetch("/spu/getcate?pid="+pid).then(function (res) {
+                    return res.text();
+                }).then(function (data) {
+                    let objarr=JSON.parse(data);
+                    let erjiele=$(".erji");
+                    erjiele.html("");
+                    $(".sanji").html(' <option>-请选择三级分类-</option>');
+                    for(let obj of objarr){
+                        let opt=$("<option></option>");
+                        opt.attr("value",obj.cate_id);
+                        opt.text(obj.cate_name);
+                        erjiele.append(opt)
+                    }
+                })
+            }
+            function selectsanji(_this) {
+                //当前分类的id，下一级菜单的父id
+                let pid=_this.value;
+                fetch("/spu/getcate?pid="+pid).then(function (res) {
+                    return res.text();
+                }).then(function (data) {
+                    let objarr=JSON.parse(data);
+                    let sanjiele=$(".sanji");
+                    sanjiele.html("");
+                    for(let obj of objarr){
+                        let opt=$("<option></option>");
+                        opt.attr("value",obj.cate_id);
+                        opt.text(obj.cate_name);
+                        sanjiele.append(opt)
+                    }
+                })
+            }
+            function getattrkey(_this) {
+                //获取当前分类的id
+                let cate_id=_this.value;
+               //console.log(cate_id);
+                //获取当前所有的属性键
+                fetch("/spu/getattrKey?cate_id="+cate_id).then(function (res) {
+                    return res.text();
+                }).then(function (data) {
+                    let objarr=JSON.parse(data);
+                    let attrkeyele=$(".attrKey");
+                    attrkeyele.html("");
+                    $(".attrValue").html(' <option>-请选择属性值-</option>');
+                    for(let x of objarr){
+                        let opt=$("<option></option>");
+                        opt.attr("value",x.key_id);
+                        opt.text(x.key_name);
+                       attrkeyele.append(opt)
+                    }
+                })
+            }
+            function xuanzezhi(_this) {
+                //当前分类的id，下一级菜单的父id
+                let key_id=_this.value;
+                fetch("/spu/getattrValue?key_id="+key_id).then(function (res) {
+                    return res.text();
+                }).then(function (data) {
+                    let objarr=JSON.parse(data);
+                    let attrValuele=$(".attrValue");
+                    //attrValuele.html("");
+                    for(let y of objarr){
+                        var obj=$("<input type='checkbox' name='value_id'>");
+                        obj.attr("value",y.id)
+                        var obj2=$("<span></span>")
+                        obj2.text(y.value_name)
+                        attrValuele.append(obj);
+                        attrValuele.append(obj2);
+                    }
+                })
+            }
+        </script>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+</body>
+</html>

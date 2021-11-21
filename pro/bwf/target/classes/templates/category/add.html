@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Reset Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/reset.css}" type="text/css" media="screen" />
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/style.css}" type="text/css" media="screen" />
+    <!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
+    <link rel="stylesheet" th:href="@{/resource/css/invalid.css}" type="text/css" media="screen" />
+    <link rel="stylesheet" th:href="@{/resource/css/mydefine.css}" type="text/css" media="screen" />
+    <!--                       Javascripts                       -->
+    <!-- jQuery -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery-3.4.1.js}"></script>
+    <!-- jQuery Configuration -->
+    <script type="text/javascript" th:src="@{/resource/scripts/simpla.jquery.configuration.js}"></script>
+    <!-- Facebox jQuery Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/facebox.js}"></script>
+    <!-- jQuery WYSIWYG Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.wysiwyg.js}"></script>
+    <!-- jQuery Datepicker Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.datePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.date.js}"></script>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>添加分类</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加角色-->
+        <form th:action="@{/category/save}" method="post">
+            <input class="text-input small-input" type="hidden" th:value="${cate_id}" name="cate_parentid">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>选择品牌</label>
+                    <input placeholder="选择品牌" list="brand" size="40" name="brand_id"/>
+                    <datalist id="brand">
+                        <option th:each="br:${brandList}" th:value="${br.brand_id}">
+                               <span th:text="${br.brand_name}"></span>
+                        </option>
+                    </datalist>
+                </p>
+                <p>
+                    <label>分类名</label>
+                    <input class="text-input small-input" type="text"  name="cate_name">
+                </p>
+                <p>
+                    <label>分类排序</label>
+                    <input class="text-input small-input" type="text"  name="cate_sort">
+                </p>
+                <p>
+                    <label>添加频道</label>
+                    <input class="text-input small-input" type="text"  name="cate_channel">
+                </p>
+                <p>
+                    <input type="button" value="添加" onclick="tianjia()">
+                    <label>添加属性键</label>
+                    <div class="attrkey">
+                         <input class="text-input small-input" type="text"  name="key_name">
+                    </div>
+                </p>
+                <p>
+                    <input class="button" type="submit" value="添加分类提交">
+                </p>
+            </fieldset>
+            <script>
+                function tianjia(){
+                    $(".attrkey").append('<input class="text-input small-input" type="text" name="key_name"><button class="cha">x</button>')
+                }
+                $(function () {
+                    $(".attrkey").on("click",".cha",function () {
+                        //删除操作
+                        //this指的是.cha
+                        $(this).prev().remove();
+                        $(this).remove();
+                    })
+                })
+            </script>
+        </form>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+</body>
+</html>

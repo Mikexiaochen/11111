@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.RoleDao">
+    <select id="getRoleListByAdminId" resultType="role">
+        SELECT r.* FROM admin_role ar INNER JOIN role r ON ar.`role_id`=r.`role_id`
+        WHERE ar.`admin_id`=#{admin_id}
+    </select>
+
+    <select id="getRoleListByOperateUrl" resultType="role">
+        SELECT e.* FROM operate a
+    INNER JOIN permission_operate b
+    ON a.`operate_id`=b.`operate_id`
+    INNER JOIN permission c
+    ON c.`permission_id`=b.`permission_id`
+    INNER JOIN role_permission d ON
+    d.`permission_id`=c.`permission_id`
+    INNER JOIN role e
+    ON e.`role_id`=d.`role_id`
+    WHERE a.`operate_url`=#{operate_url}
+    </select>
+    <select id="findAllRole" resultType="role">
+        select * from role
+    </select>
+    <select id="getRoleListByAdminIdAll" resultType="role">
+       SELECT a.*,b.role_id xzrole_id,b.role_name xzrole_name
+       FROM role a LEFT JOIN(SELECT r.* FROM admin_role ar INNER JOIN role r ON ar.`role_id`=r.`role_id` WHERE admin_id=#{admin.admin_id})
+        AS b ON a.role_id=b.role_id
+    </select>
+
+    <!--插入角色并获取角色id-->
+    <insert id="insertRole" parameterType="role">
+        <selectKey keyProperty="role_id" order="AFTER" resultType="int">
+            SELECT  LAST_INSERT_ID()
+        </selectKey>
+        insert into role (role_name) values(#{role_name})
+    </insert>
+    <!--插入角色权限-->
+    <insert id="insertRolePerssion">
+        insert into role_permission(role_id,permission_id) values
+        <foreach collection="permission_ids" item="i" separator="," >
+            (#{role_id},#{i})
+        </foreach>
+    </insert>
+    <!--获取角色对象-->
+    <select id="findRoleById" resultMap="findRoleByIdMap">
+        select * from  role where role_id=#{role_id}
+    </select>
+
+    <resultMap id="findRoleByIdMap" type="role">
+        <!--当前关于admin的配置-->
+        <id column="role_id" property="role_id"></id>
+        <result column="role_name" property="role_name"></result>
+
+        <!--lazy懒加载 如果你只需要admin 不需要rolelist，只执行getAdminByName这个sql语句，如果需要使用rolelist时候，他才会再来执行getRoleListByAdminId对应的sql语句-->
+        <collection property="permissionList" ofType="permission" column="role_id" select="com.xc.dao.PermissionDao.getPermissionListByRoleId" fetchType="lazy"></collection>
+    </resultMap>
+    <!--更新角色-->
+    <update id="updateRole" parameterType="role">
+        update role set role_name=#{role_name} where role_id=#{role_id}
+    </update>
+    <!--删除权限-->
+    <delete id="deleteRolePermission">
+        delete  from role_permission where role_id=#{role_id}
+    </delete>
+
+    <!--删除角色-->
+    <delete id="deleteRole">
+        delete from role where role_id=#{role_id}
+    </delete>
+    <!--删除角色相关-->
+    <delete id="deleteAdmin">
+        delete  from admin_role where role_id=#{role_id}
+    </delete>
+</mapper>

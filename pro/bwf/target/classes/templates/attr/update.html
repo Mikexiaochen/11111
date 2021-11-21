@@ -1,0 +1,83 @@
+ <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Reset Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/reset.css}" type="text/css" media="screen" />
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" th:href="@{/resource/css/style.css}" type="text/css" media="screen" />
+    <!-- Invalid Stylesheet. This makes stuff look pretty. Remove it if you want the CSS completely valid -->
+    <link rel="stylesheet" th:href="@{/resource/css/invalid.css}" type="text/css" media="screen" />
+    <link rel="stylesheet" th:href="@{/resource/css/mydefine.css}" type="text/css" media="screen" />
+    <!--                       Javascripts                       -->
+    <!-- jQuery -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery-3.4.1.js}"></script>
+    <!-- jQuery Configuration -->
+    <script type="text/javascript" th:src="@{/resource/scripts/simpla.jquery.configuration.js}"></script>
+    <!-- Facebox jQuery Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/facebox.js}"></script>
+    <!-- jQuery WYSIWYG Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.wysiwyg.js}"></script>
+    <!-- jQuery Datepicker Plugin -->
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.datePicker.js}"></script>
+    <script type="text/javascript" th:src="@{/resource/scripts/jquery.date.js}"></script>
+    <style>
+        .erji label{
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>修改属性键</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--修改角色-->
+        <form th:action="@{/attr/save}" method="post">
+            <fieldset>
+                <!-- Set class to "column-left" or "column-right" on fieldsets to divide the form into columns -->
+                <p>
+                    <label>属性键名</label>
+                    <input type="hidden" name="key_id" th:value="${spuAttrKey.key_id}">
+                    <input class="text-input small-input" type="text" name="key_name" th:value="${spuAttrKey.key_name}">
+                </p>
+                <p>
+                    <label>是否是高级属性</label>
+                    <input th:checked="${spuAttrKey.key_ishigh==0}"  class="text-input" type="checkbox"  name="key_ishigh" th:value="${spuAttrKey.key_ishigh}">
+                     否
+                    <input th:checked="${spuAttrKey.key_ishigh==1}"  class="text-input" type="checkbox"  name="key_ishigh" th:value="${spuAttrKey.key_ishigh}">
+                    是
+                </p>
+                <p>
+                    <label>属性值列表</label>
+                    <div class="attrValueW">
+                        <button type="button" onclick="tianjia()">添加属性值</button>
+                        <div th:each="v:${spuAttrKey.spuAttrValueList}" class="attrValue">
+                            <input class="text-input small-input" type="text" name="value_name" th:value="${v.value_name}"><button class="cha" type="button">X</button>
+                        </div>
+                    </div>
+                </p>
+                <p>
+                    <input class="button" type="submit" value="修改属性键提交">
+                </p>
+            </fieldset>
+        </form>
+        <script>
+            function  tianjia() {
+                $(".attrValueW").append('<div class="attrValue"><input class="text-input small-input" type="text" name="value_name"><button class="cha" type="button">X</button></div>')
+            }
+            $(function () {
+                $(".attrValueW").on("click",".cha",function () {
+                    $(this).parent().remove();
+                })
+            })
+        </script>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+</body>
+</html>

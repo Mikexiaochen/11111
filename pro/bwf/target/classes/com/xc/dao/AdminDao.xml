@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.AdminDao">
+    <!--查询用户对象，顺带查询用户的同时将角色列表查出来-->
+    <select id="getAdminByName" resultMap="getAdminByNameMap">
+       select * from admin where admin_name=#{admin_name}
+    </select>
+    
+    <resultMap id="getAdminByNameMap" type="admin">
+        <!--当前关于admin的配置-->
+        <id column="admin_id" property="admin_id"></id>
+        <result column="admin_name" property="admin_name"></result>
+        <result column="admin_pass" property="admin_pass"></result>
+        <result column="admin_nickname" property="admin_nickname"></result>
+
+        <!--lazy懒加载 如果你只需要admin 不需要rolelist，只执行getAdminByName这个sql语句，如果需要使用rolelist时候，他才会再来执行getRoleListByAdminId对应的sql语句-->
+        <collection property="roleList" ofType="role" column="admin_id" select="com.xc.dao.RoleDao.getRoleListByAdminId" fetchType="lazy"></collection>
+    </resultMap>
+    <select id="findAllAdmin" resultType="admin">
+        select * from admin
+    </select>
+
+    <insert id="insertAdmin">
+        <selectKey keyProperty="admin.admin_id" order="AFTER" resultType="int">
+            SELECT  LAST_INSERT_ID()
+        </selectKey>
+        insert into admin(admin_name,admin_pass,admin_nickname)values(#{admin.admin_name},#{admin.admin_pass},#{admin.admin_nickname})
+    </insert>
+    <insert id="insertRole">
+        insert into admin_role(admin_id,role_id) values
+        <foreach collection="role_ids" item="i" separator="," >
+            (#{admin_id},#{i})
+        </foreach>
+    </insert>
+    <select id="findAdminById" resultMap="getAdminByIdMap">
+        select * from admin where admin_id=#{admin.admin_id}
+    </select>
+    <resultMap id="getAdminByIdMap" type="admin">
+        <!--当前关于admin的配置-->
+        <id column="admin_id" property="admin_id"></id>
+        <result column="admin_name" property="admin_name"></result>
+        <result column="admin_pass" property="admin_pass"></result>
+        <result column="admin_nickname" property="admin_nickname"></result>
+
+        <!--lazy懒加载 如果你只需要admin 不需要rolelist，只执行getAdminByName这个sql语句，如果需要使用rolelist时候，他才会再来执行getRoleListByAdminId对应的sql语句-->
+        <collection property="roleList" ofType="role" column="admin_id" select="com.xc.dao.RoleDao.getRoleListByAdminIdAll" fetchType="lazy"></collection>
+    </resultMap>
+    <update id="updateAdmin" parameterType="admin">
+        update admin set admin_name=#{admin_name},admin_nickname=#{admin_nickname} where admin_id=#{admin_id}
+    </update>
+
+    <delete id="deleteAdminRole">
+        delete  from admin_role where admin_id=#{admin_id}
+    </delete>
+    <delete id="deleteAdmin">
+        delete from admin where admin_id=#{admin_id}
+    </delete>
+    <select id="findAdmin" parameterType="admin" resultType="admin">
+        select * from admin
+        <where>
+            <if test="admin_id!=null">
+                and admin_id=#{admin_id}
+            </if>
+            <if test="admin_name!=null and admin_name!=''">
+                and admin_name=#{admin_name}
+            </if>
+            <if test="admin_nickname!=null and admin_nickname!=''">
+                and admin_nickname=#{admin_nickname}
+            </if>
+        </where>
+
+    </select>
+</mapper>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>员工管理</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <form th:action="@{/admin/query}" method="post">
+            <h4>搜索</h4>
+            <p>
+                <input class="text-input small-input" type="text" placeholder="员工id" name="admin_id" th:value="${admin_id}">
+            </p>
+            <p>
+                <input class="text-input small-input" type="text" placeholder="用户名" name="admin_name" th:value="${admin_name}">
+            </p>
+            <p>
+                <input class="text-input small-input" type="text" placeholder="用户昵称" name="admin_nickname"  th:value="${admin_nickname}">
+            </p>
+            <input type="submit" value="查询">
+            <input type="button" class="button" value="导出" onclick="daochu()">
+        </form>
+        <br/>
+        <!--添加员工-->
+        <input type="submit" class="button" value="添加员工" onclick="tiaozhuan()">
+
+        <hr>
+        <table>
+            <thead>
+            <tr>
+
+                <th>用户id</th>
+                <th>用户姓名</th>
+                <th>用户昵称</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="alt-row" th:each="ad:${adminList}">
+                <td th:text="${ad.admin_id}"></td>
+                <td th:text="${ad.admin_name}"></td>
+                <td th:text="${ad.admin_nickname}"></td>
+                <td>
+                    <!-- Icons -->
+                    <a th:href="@{/admin/update/(admin_id=${ad.admin_id})}" title="Edit"><img th:src="@{/resource/images/icons/pencil.png}" alt="Edit"></a>
+                    <a th:href="@{/admin/delete/(admin_id=${ad.admin_id})}" onclick="return confirm('确认删除此用户吗？')" title="Delete"><img th:src="@{/resource/images/icons/cross.png}" alt="Delete"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+        function tiaozhuan() {
+            window.location.href="/admin/add";
+        }
+        function daochu() {
+            window.location.href="/admin/export";
+        }
+    </script>
+</body>
+</html>

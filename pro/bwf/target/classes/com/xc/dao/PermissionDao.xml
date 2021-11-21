@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xc.dao.PermissionDao">
+    <select id="findAllPermission" resultType="permission">
+        select * from permission
+    </select>
+    <select id="getPermissionListByRoleId" resultType="permission">
+     SELECT p.*,q.`permission_id` xzpermission_id,q.`permission_name` xzpermission_name,q.`pid` xzpid
+     FROM permission p LEFT JOIN(SELECT a.* FROM permission a INNER JOIN role_permission b ON a.`permission_id`=b.`permission_id` WHERE b.`role_id`=#{role_id})
+    AS q ON p.`permission_id`=q.`permission_id`;
+    </select>
+</mapper>

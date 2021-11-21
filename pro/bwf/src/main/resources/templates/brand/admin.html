@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <div th:replace="../templates/inc/header :: header"></div>
+</head>
+<body>
+<div id="body-wrapper">
+    <!-- Wrapper for the radial gradient background -->
+    <div th:replace="../templates/inc/left :: left"></div>
+    <!-- End #sidebar -->
+    <div id="main-content">
+
+        <h2>品牌管理</h2>
+        <p id="page-intro">What would you like to do?</p>
+        <!------------- 核心内容     -------------------->
+        <!--添加品牌-->
+        <input type="submit" class="button" value="添加品牌" onclick="tiaozhuan()">
+        <hr>
+        <table>
+            <thead>
+            <tr>
+
+                <th>品牌id</th>
+                <th>品牌名</th>
+                <th>品牌介绍</th>
+                <th>品牌logo</th>
+                <th>排序</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="alt-row" th:each="ad:${brandList}">
+                <td th:text="${ad.brand_id}"></td>
+                <td th:text="${ad.brand_name}"></td>
+                <td th:text="${ad.brand_introduction}"></td>
+                <td >
+                    <img th:src="${'http://localhost:8080/img/'+ad.brand_logourl}" width="60px" height="30px">
+                </td>
+                <td th:text="${ad.sortno}"></td>
+                <td>
+                    <!-- Icons -->
+                    <a th:href="@{/brand/update/(brand_id=${ad.brand_id})}" title="Edit"><img th:src="@{/resource/images/icons/pencil.png}" alt="Edit"></a>
+                    <a th:href="@{/brand/delete/(brand_id=${ad.brand_id})}" onclick="return confirm('确认删除此用户吗？')" title="Delete"><img th:src="@{/resource/images/icons/cross.png}" alt="Delete"></a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <!------------- 核心内容     -------------------->
+        <div th:replace="../templates/inc/footer :: footer"></div>
+    </div>
+    <script>
+        function tiaozhuan() {
+            window.location.href="/brand/add";
+        }
+    </script>
+</body>
+</html>
